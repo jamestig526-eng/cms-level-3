@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
 
-    // Validate lead if provided
     let lead = null;
     if (leadId) {
       lead = await Lead.findById(leadId);
@@ -40,45 +39,41 @@ export async function POST(request: NextRequest) {
 
     const twilioService = new TwilioService();
     const smsId = generateUniqueId('SMS_');
-
-    // Format phone number
     const formattedToNumber = twilioService.formatPhoneNumber(toNumber);
 
+    const smsData = {
+      smsId,
+      messageType: 'outbound',
+      fromNumber: twilioService.getPhoneNumber(),
+      toNumber: formattedToNumber,
+      content,
+      status: 'pending',
+      sentAt: new Date(),
+      leadId: leadId || undefined,
+      customerName: customerName || lead?.customerName || '',
+      userId: user.id,
+      direction: 'outbound-api',
+      tags: [],
+      isRead: true
+    };
+
+    const sms = new SMS(smsData);
+    await sms.save();
+
+    let twilioResponse;
     try {
-      // Send SMS via Twilio
-      const twilioResponse = await twilioService.sendSMS({
+      twilioResponse = await twilioService.sendSMS({
         to: formattedToNumber,
         body: content,
         mediaUrl: mediaUrls,
-        statusCallback: `${process.env.NEXT_PUBLIC_API_URL}/api/sms/webhooks/status`
+        statusCallback: `https://motortiger-cms.vercel.app/api/sms/webhooks/status`
       });
 
-      // Create SMS record
-      const smsData = {
-        smsId,
-        messageType: 'outbound',
-        fromNumber: process.env.TWILIO_PHONE_NUMBER || '+18337153810',
-        toNumber: formattedToNumber,
-        content,
-        status: twilioResponse.status,
-        sentAt: new Date(),
-        leadId: leadId || undefined,
-        customerName: customerName || lead?.customerName || '',
-        userId: user.id,
-        twilioMessageSid: twilioResponse.sid,
-        twilioStatus: twilioResponse.status,
-        direction: 'outbound-api',
-        accountSid: process.env.TWILIO_ACCOUNT_SID,
-        mediaUrls: mediaUrls || [],
-        numSegments: parseInt(twilioResponse.numSegments),
-        tags: [],
-        isRead: true // Outbound messages are marked as read
-      };
-
-      const sms = new SMS(smsData);
+      sms.status = twilioResponse.status;
+      sms.twilioMessageSid = twilioResponse.sid;
+      sms.direction = twilioResponse.direction;
       await sms.save();
-
-      // Log activity
+      
       await logActivity({
         userId: user.id,
         userName: user.email,
@@ -100,34 +95,25 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (twilioError: any) {
-      // Create failed SMS record
-      const smsData = {
-        smsId,
-        messageType: 'outbound',
-        fromNumber: process.env.TWILIO_PHONE_NUMBER || '+18337153810',
-        toNumber: formattedToNumber,
-        content,
-        status: 'failed',
-        sentAt: new Date(),
-        failureReason: twilioError.message,
-        leadId: leadId || undefined,
-        customerName: customerName || lead?.customerName || '',
-        userId: user.id,
-        direction: 'outbound-api',
-        tags: [],
-        isRead: true
-      };
-
-      const sms = new SMS(smsData);
+      // Update existing SMS record to 'failed' status
+      sms.status = 'failed';
+      sms.failureReason = twilioError.message;
       await sms.save();
-
-      throw twilioError;
+      
+      console.error('Twilio SMS sending failed:', twilioError);
+      return NextResponse.json(
+        { error: `Twilio SMS error: ${twilioError.message}` },
+        { status: 400 }
+      );
     }
 
   } catch (error: any) {
     console.error('Send SMS error:', error);
+    if (error.name === 'MongooseError' || error.name === 'ValidationError') {
+      return NextResponse.json({ error: `SMS validation failed: ${error.message}` }, { status: 400 });
+    }
     return NextResponse.json(
-      { error: error.message || 'Failed to send SMS' },
+      { error: `Internal server error: ${error.message}` },
       { status: 500 }
     );
   }

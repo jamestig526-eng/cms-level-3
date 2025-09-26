@@ -1,4 +1,5 @@
 import { Vonage } from '@vonage/server-sdk';
+import { MachineDetectionBehavior } from '@vonage/voice';
 
 interface VonageConfig {
   apiKey: string;
@@ -50,18 +51,18 @@ export class VonageService {
       const response = await this.vonage.voice.createOutboundCall({
         to: [{ type: 'phone', number: options.to }],
         from: { type: 'phone', number: options.from },
-        answer_url: [options.answerUrl],
-        event_url: options.eventUrl ? [options.eventUrl] : undefined,
-        machine_detection: options.machineDetection || 'continue',
-        length_timer: options.lengthTimer || 7200,
-        ringing_timer: options.ringingTimer || 60
+        answerUrl: [options.answerUrl],
+        eventUrl: options.eventUrl ? [options.eventUrl] : undefined,
+        machineDetection: options.machineDetection as MachineDetectionBehavior || 'continue',
+        lengthTimer: options.lengthTimer || 7200,
+        ringingTimer: options.ringingTimer || 60
       });
 
       return {
         uuid: response.uuid,
         status: response.status,
         direction: response.direction,
-        conversationUuid: response.conversation_uuid
+        conversationUuid: response.conversationUUID
       };
     } catch (error) {
       console.error('Vonage call error:', error);
@@ -81,13 +82,17 @@ export class VonageService {
 
   async transferCall(callUuid: string, destination: string): Promise<boolean> {
     try {
-      await this.vonage.voice.transferCall(callUuid, {
-        action: 'transfer',
-        destination: {
+      const ncco = [{
+        action: 'connect',
+        from: process.env.VONAGE_PHONE_NUMBER,
+        endpoint: [{
           type: 'phone',
           number: destination
-        }
-      });
+        }]
+      }];
+
+      // await this.vonage.voice.updateCall(callUuid, { ncco });
+
       return true;
     } catch (error) {
       console.error('Vonage transfer error:', error);

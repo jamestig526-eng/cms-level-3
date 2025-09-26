@@ -30,8 +30,13 @@ interface Sale {
   customerName: string;
   customerEmail: string;
   phoneNumber: string;
+  alternateNumber?: string;
   productName?: string;
   salesPrice?: number;
+  totalMargin?: number;
+  modeOfPayment?: string;
+  paymentPortal?: string;
+  paymentDate?: string;
   status: string;
   orderConfirmationSent: boolean;
   orderStageUpdated: boolean;

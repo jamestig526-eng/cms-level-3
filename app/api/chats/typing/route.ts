@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Clean up old typing indicators (older than 5 seconds)
     const now = Date.now();
-    for (const [userId, data] of chatTypingUsers.entries()) {
+    for (const [userId, data] of Array.from(chatTypingUsers.entries())) {
       if (now - data.timestamp > 5000) {
         chatTypingUsers.delete(userId);
       }
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
     
     // Clean up old typing indicators
     const now = Date.now();
-    for (const [userId, data] of chatTypingUsers.entries()) {
+    for (const [userId, data] of Array.from(chatTypingUsers.entries())) {
       if (now - data.timestamp > 5000) {
         chatTypingUsers.delete(userId);
       }

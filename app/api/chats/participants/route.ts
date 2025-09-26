@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       
       // Add only users not already in the chat
       const newParticipants = validUserIds.filter(id => 
-        !chat.participants.some(p => p.toString() === id.toString())
+        !chat.participants.some((p:any) => p.toString() === id.toString())
       );
       
       chat.participants.push(...newParticipants);
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         userName: user.email,
         userRole: user.role,
         action: 'update',
-        module: 'chats',
+        module: 'users',
         description: `Added ${newParticipants.length} participant(s) to group chat`,
         targetId: chat._id.toString(),
         targetType: 'Chat',
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         id === user.id || chat.createdBy.toString() === user.id || user.role === 'admin'
       );
       
-      chat.participants = chat.participants.filter(p => 
+      chat.participants = chat.participants.filter((p:any) => 
         !usersToRemove.includes(p.toString())
       );
       
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
         userName: user.email,
         userRole: user.role,
         action: 'update',
-        module: 'chats',
+        module: 'users',
         description: `Removed ${usersToRemove.length} participant(s) from group chat`,
         targetId: chat._id.toString(),
         targetType: 'Chat',

@@ -51,7 +51,7 @@ export class TwilioService {
         to: options.to,
         mediaUrl: options.mediaUrl,
         statusCallback: options.statusCallback,
-        maxPrice: options.maxPrice,
+        maxPrice: options.maxPrice !== undefined ? Number(options.maxPrice) : undefined,
         provideFeedback: options.provideFeedback
       });
 
@@ -119,7 +119,7 @@ export class TwilioService {
   async getPhoneNumbers(): Promise<any[]> {
     try {
       const phoneNumbers = await this.client.incomingPhoneNumbers.list();
-      return phoneNumbers.map(number => ({
+      return phoneNumbers.map((number:any) => ({
         sid: number.sid,
         phoneNumber: number.phoneNumber,
         friendlyName: number.friendlyName,
@@ -132,6 +132,10 @@ export class TwilioService {
       console.error('Twilio get phone numbers error:', error);
       throw new Error(`Failed to get phone numbers: ${error.message}`);
     }
+  }
+
+  public getPhoneNumber(): string {
+    return this.config.phoneNumber;
   }
 
   async validatePhoneNumber(phoneNumber: string): Promise<any> {

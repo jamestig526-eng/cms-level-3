@@ -17,7 +17,8 @@ import {
   Hash,
   Bold,
   Italic,
-  Underline
+  Underline,
+  Share
 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';

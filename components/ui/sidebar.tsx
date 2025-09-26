@@ -38,30 +38,30 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Load unread count on component mount
-  useEffect(() => {
-    if (user) {
-      loadUnreadCount();
-      // Set up interval to check for new messages
-      const interval = setInterval(loadUnreadCount, 30000); // Check every 30 seconds
-      return () => clearInterval(interval);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     loadUnreadCount();
+  //     // Set up interval to check for new messages
+  //     const interval = setInterval(loadUnreadCount, 30000); // Check every 30 seconds
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [user]);
 
-  const loadUnreadCount = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/chats/unread-count', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+  // const loadUnreadCount = async () => {
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     const response = await fetch('/api/chats/unread-count', {
+  //       headers: { 'Authorization': `Bearer ${token}` }
+  //     });
 
-      if (response.ok) {
-        const data = await response.json();
-        setUnreadCount(data.unreadCount);
-      }
-    } catch (error) {
-      console.error('Failed to load unread count:', error);
-    }
-  };
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setUnreadCount(data.unreadCount);
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to load unread count:', error);
+  //   }
+  // };
 
   const menuItems = [
     {

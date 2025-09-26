@@ -489,63 +489,6 @@ export default function PhoneSystemPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Total Calls</p>
-                    <p className="text-2xl font-bold">{stats.calls.total}</p>
-                    <p className="text-xs text-blue-600">{stats.calls.today} today</p>
-                  </div>
-                  <Phone className="h-8 w-8 text-blue-600" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Call Duration</p>
-                    <p className="text-2xl font-bold">{formatDuration(stats.calls.totalDuration)}</p>
-                    <p className="text-xs text-green-600">Avg: {formatDuration(stats.calls.averageDuration)}</p>
-                  </div>
-                  <Clock className="h-8 w-8 text-green-600" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Total SMS</p>
-                    <p className="text-2xl font-bold">{stats.sms.total}</p>
-                    <p className="text-xs text-purple-600">{stats.sms.today} today</p>
-                  </div>
-                  <MessageSquare className="h-8 w-8 text-purple-600" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">SMS Delivery</p>
-                    <p className="text-2xl font-bold">{stats.sms.deliveryRate}%</p>
-                    <p className="text-xs text-orange-600">{stats.sms.delivered} delivered</p>
-                  </div>
-                  <MessageSquare className="h-8 w-8 text-orange-600" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="softphone" className="flex items-center gap-2">
@@ -1005,7 +948,7 @@ export default function PhoneSystemPage() {
                         </div>
                         <div className="text-sm">
                           <p className="font-medium">
-                            {sms.messageType === 'outbound' ? 'To' : 'From'}: {sms.messageType === 'outbound' ? sms.toNumber : sms.fromNumber}
+                            {sms.messageType === 'inbound' ? 'To' : 'From'}: {sms.messageType === 'inbound' ? sms.toNumber : sms.fromNumber}
                           </p>
                           {sms.customerName && (
                             <p className="text-gray-600">{sms.customerName}</p>
@@ -1295,6 +1238,63 @@ export default function PhoneSystemPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Stats Cards */}
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-8">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Calls</p>
+                    <p className="text-2xl font-bold">{stats.calls.total}</p>
+                    <p className="text-xs text-blue-600">{stats.calls.today} today</p>
+                  </div>
+                  <Phone className="h-8 w-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Call Duration</p>
+                    <p className="text-2xl font-bold">{formatDuration(stats.calls.totalDuration)}</p>
+                    <p className="text-xs text-green-600">Avg: {formatDuration(stats.calls.averageDuration)}</p>
+                  </div>
+                  <Clock className="h-8 w-8 text-green-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total SMS</p>
+                    <p className="text-2xl font-bold">{stats.sms.total}</p>
+                    <p className="text-xs text-purple-600">{stats.sms.today} today</p>
+                  </div>
+                  <MessageSquare className="h-8 w-8 text-purple-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">SMS Delivery</p>
+                    <p className="text-2xl font-bold">{stats.sms.deliveryRate}%</p>
+                    <p className="text-xs text-orange-600">{stats.sms.delivered} delivered</p>
+                  </div>
+                  <MessageSquare className="h-8 w-8 text-orange-600" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

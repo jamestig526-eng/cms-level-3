@@ -81,7 +81,7 @@ export async function DELETE(
       userName: user.email,
       userRole: user.role,
       action: 'delete',
-      module: 'chats',
+      module: 'users',
       description: `Permanently deleted chat: ${chat.chatType === 'group' ? chat.chatName || 'Group Chat' : 'Direct Chat'}`,
       targetId: chat._id.toString(),
       targetType: 'Chat',
